@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">BlutufIntegration</string>
+    <string name="app_description">This is a sample app for integrating grandcentrix\'s Blutuf library. Before starting please check that all requirements are met.</string>
+    <string name="ble_requirement">Bluetooth Support</string>
+    <string name="permissions_requirement">Permissions Guarantee</string>
+    <string name="request_permission">Request Permission</string>
+    <string name="error_ble_not_supported">This Device does not support Bluetooth. Retry with another device!</string>
+    <string name="error_permission_needed">The app needs permission to be continued!</string>
+    <string name="start_app">Start</string>
+    <string name="fragment_label_detail">Device detail</string>
+
+    <string name="bluetooth_disable_error_title">Bluetooth is disable!</string>
+    <string name="bluetooth_disable_error_text">To start scan enable the bluetooth of your device.</string>
+
+    <string name="device_name">Name: %s</string>
+    <string name="device_identifier">Identifier: %s</string>
+
+    <string name="connected_to">Connected to <b>%s</b></string>
+    <string name="connecting_to">Connecting to <b>%s</b>…</string>
+    <string name="disconnected">Disconnected</string>
+
+</resources>

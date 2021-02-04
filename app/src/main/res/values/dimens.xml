@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="material_margin_small">8dp</dimen>
+    <dimen name="material_margin_normal">16dp</dimen>
+    <dimen name="material_margin_large">32dp</dimen>
+
+    <dimen name="view_full_screen_image">120dp</dimen>
+    <dimen name="view_full_screen_title">16sp</dimen>
+    <dimen name="view_full_screen_text">14sp</dimen>
+</resources>
