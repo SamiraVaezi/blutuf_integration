@@ -5,13 +5,15 @@ import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
 import net.grandcentrix.blutuf.core.api.Bonding
 import net.grandcentrix.blutuf.core.api.Device
+import net.grandcentrix.blutuf.core.api.Service
 import net.grandcentrix.blutufintegration.R
 
 @Parcelize
 data class DeviceUiState(
     val device: @RawValue Device,
     var state: @RawValue State,
-    var bonding: @RawValue Bonding.State?
+    var bonding: @RawValue Bonding.State?,
+    var services: @RawValue ArrayList<Service>
 ) : Parcelable {
 
 }

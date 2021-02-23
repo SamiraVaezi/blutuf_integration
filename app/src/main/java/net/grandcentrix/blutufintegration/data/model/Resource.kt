@@ -8,7 +8,7 @@ sealed class Resource<out T : Any?> {
     data class Scanning<out T : Any?>(val data: T? = null) : Resource<T>()
     data class Complete<out T : Any?>(val data: T? = null) : Resource<T>()
     data class Error(
-        val errorCode: BlutufError
+        val error: BlutufError
     ) :
         Resource<Nothing>()
 }

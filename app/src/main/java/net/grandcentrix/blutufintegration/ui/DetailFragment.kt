@@ -11,8 +11,11 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.tabs.TabLayoutMediator
+import net.grandcentrix.blutuf.core.api.Bonding
 import net.grandcentrix.blutuf.core.api.Data
 import net.grandcentrix.blutuf.core.api.Device
+import net.grandcentrix.blutufintegration.MainViewModel
 import net.grandcentrix.blutufintegration.R
 import net.grandcentrix.blutufintegration.data.model.DeviceUiState
 import net.grandcentrix.blutufintegration.data.model.Resource
@@ -39,9 +42,26 @@ class DetailFragment : Fragment() {
         currectDevice = args.device
         initiateViews(currectDevice)
 
+        setupViewPager()
+
         sharedViewModel.uiModel.observe(viewLifecycleOwner, { uiModel -> updateUi(uiModel) })
 
         return binding.root
+    }
+
+    private fun setupViewPager() {
+        val fragments = listOf(InfoFragment(currectDevice), ServiceFragment())
+
+        val titles = listOf(
+            getString(R.string.tab_title_info),
+            getString(R.string.tab_title_service),
+        )
+
+        binding.viewPager.adapter = DeviceDetailViewPagerAdapter(this, fragments)
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            tab.text = titles[position]
+            binding.viewPager.setCurrentItem(tab.position, true)
+        }.attach()
     }
 
     private fun updateUi(uiModel: Resource<List<DeviceUiState>>?) {
@@ -50,8 +70,9 @@ class DetailFragment : Fragment() {
                 uiModel.data.find { deviceUiState -> deviceUiState.device.identifier == currectDevice.device.identifier }
                     ?.let {
                         currectDevice.state = it.state
-                        Log.e("sami","bonding : "+it.bonding?.name)
                         updateState(it)
+                        updateService(it)
+
                     }
             }
             else -> {
@@ -59,21 +80,27 @@ class DetailFragment : Fragment() {
         }
     }
 
+    private fun updateService(deviceUiState: DeviceUiState) {
+        (((binding.viewPager.adapter as DeviceDetailViewPagerAdapter).getFragment(1)) as ServiceFragment).updateUi(
+            deviceUiState.services
+        )
+    }
+
     private fun initiateViews(deviceUiState: DeviceUiState) {
         binding.name.text = getString(R.string.device_name, deviceUiState.device.name ?: "Unknown")
         binding.identifier.text =
             getString(R.string.device_identifier, deviceUiState.device.identifier)
 
-        binding.description.text = getDescription(deviceUiState.device)
-
         binding.btnConnect.setOnClickListener { sharedViewModel.connectDevice(deviceUiState.device.identifier) }
         binding.btnDisconnect.setOnClickListener { sharedViewModel.disconnectDevice(deviceUiState.device.identifier) }
         binding.btnBond.setOnClickListener { createBond() }
         updateState(deviceUiState)
+
+
     }
 
     private fun createBond() {
-        if(currectDevice.state != State.CONNECTED) {
+        if (currectDevice.state != State.CONNECTED) {
             Snackbar.make(binding.root, "Device not connected!", Snackbar.LENGTH_LONG).show()
         } else {
             sharedViewModel.createBond(currectDevice.device.identifier)
@@ -85,41 +112,13 @@ class DetailFragment : Fragment() {
         binding.btnDisconnect.isVisible = deviceUiState.state == State.CONNECTED
         binding.progressBar.isVisible = deviceUiState.state == State.CONNECTING
 
-    }
-
-    private fun getDescription(device: Device): String {
-        val parsedAdvertisementData = device.advertisementData
-        val rawParsed = parsedAdvertisementData.records.joinToString(separator = "") {
-            """
-Len: ${it.length.toString(16)}
-Type: ${it.type.toString(16)}
-Raw: ${it.data.toDisplayableString()}
-
-            """.trimIndent()
+        binding.btnBond.text = deviceUiState.bonding?.name ?: "BOND"
+        binding.btnBond.visibility = when (deviceUiState.bonding) {
+            Bonding.State.BONDING -> View.INVISIBLE
+            else -> View.VISIBLE
         }
-
-        val parsedAD = """
-
-Rssi: ${device.rssi}
-Flags: ${parsedAdvertisementData.flags}
-Name: ${parsedAdvertisementData.deviceName}
-TxPowerLevel: ${parsedAdvertisementData.txPowerLevel}
-
-$rawParsed
-        """.trimIndent()
-
-        return device.advertisementData.rawData.toDisplayableString() + parsedAD
+        binding.progressBarBoning.isVisible = !binding.btnBond.isVisible
     }
 
-    private fun Data.toDisplayableString(): String {
-        return (this.buffer.array() ?: byteArrayOf()).toDisplayableString()
-    }
-
-    private fun ByteArray.toDisplayableString(): String {
-        return this.joinToString(
-            prefix = "[",
-            postfix = "]"
-        ) { (it.toInt() and 0xff).toString(16).padStart(2, '0').toUpperCase(Locale.US) }
-    }
 
 }

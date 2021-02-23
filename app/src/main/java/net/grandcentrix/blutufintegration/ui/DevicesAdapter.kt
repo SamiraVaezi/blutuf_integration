@@ -1,13 +1,9 @@
 package net.grandcentrix.blutufintegration.ui
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import net.grandcentrix.blutuf.core.api.Device
-import net.grandcentrix.blutufintegration.R
 import net.grandcentrix.blutufintegration.data.model.DeviceUiState
 import net.grandcentrix.blutufintegration.data.model.State
 import net.grandcentrix.blutufintegration.databinding.ListRowDeviceBinding
@@ -38,8 +34,16 @@ class DevicesAdapter(
         holder.binding.name.text = device.device.name ?: device.device.identifier
 
         holder.updateButton(device.state)
-        holder.binding.buttonContainer.btnConnect.setOnClickListener { clickListener.onConnectClicked(device) }
-        holder.binding.buttonContainer.btnDisconnect.setOnClickListener { clickListener.onDisconnectClicked(device) }
+        holder.binding.buttonContainer.btnConnect.setOnClickListener {
+            clickListener.onConnectClicked(
+                device
+            )
+        }
+        holder.binding.buttonContainer.btnDisconnect.setOnClickListener {
+            clickListener.onDisconnectClicked(
+                device
+            )
+        }
         holder.itemView.setOnClickListener { clickListener.onItemClicked(device) }
     }
 
@@ -51,7 +55,8 @@ class DevicesAdapter(
         fun updateButton(state: State) {
             binding.buttonContainer.btnConnect.isVisible = state == State.DISCONNECTED
             binding.buttonContainer.btnDisconnect.isVisible = state == State.CONNECTED
-            binding.buttonContainer.progressBar.isVisible = state == State.CONNECTING
+            binding.buttonContainer.progressBar.isVisible =
+                state == State.CONNECTING || state == State.CONNECTED
         }
     }
 }

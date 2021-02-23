@@ -1,22 +1,25 @@
 package net.grandcentrix.blutufintegration.ui
 
 import android.Manifest
+import android.bluetooth.BluetoothAdapter
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.checkSelfPermission
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import net.grandcentrix.blutufintegration.R
-import net.grandcentrix.blutufintegration.databinding.FragmentLaunchBinding
 import net.grandcentrix.blutufintegration.data.repo.BluetoothRepository
+import net.grandcentrix.blutufintegration.databinding.FragmentLaunchBinding
+
 
 private const val REQUEST_CODE_PERMISSION_LOCATION = 1
 
@@ -27,12 +30,12 @@ class LaunchFragment : Fragment() {
     lateinit var binding: FragmentLaunchBinding
 
     private val permissions =
-        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.BLUETOOTH_ADMIN)
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
+        arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.BLUETOOTH,
+            Manifest.permission.BLUETOOTH_ADMIN,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,6 +44,15 @@ class LaunchFragment : Fragment() {
         (requireActivity() as AppCompatActivity).supportActionBar?.hide()
         binding = FragmentLaunchBinding.inflate(layoutInflater, container, false)
 
+        /*val enableLocationIntent = Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE)
+        startActivityForResult(enableLocationIntent, 2)*/
+
+        launch()
+
+        return binding.root
+    }
+
+    private fun launch() {
         if (anyRequirementsNeeded()) {
             when {
                 !binding.checkboxBle.isChecked -> showError()
@@ -49,8 +61,6 @@ class LaunchFragment : Fragment() {
         } else {
             updateStartBtn(false)
         }
-
-        return binding.root
     }
 
     private fun anyRequirementsNeeded(): Boolean = listOf(
@@ -122,6 +132,13 @@ class LaunchFragment : Fragment() {
             } else {
                 showPermissionError()
             }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == 2){
+            launch()
         }
     }
 

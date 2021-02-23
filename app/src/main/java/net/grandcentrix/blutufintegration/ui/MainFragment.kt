@@ -14,7 +14,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import net.grandcentrix.blutufintegration.MainViewModel
 import net.grandcentrix.blutufintegration.R
 import net.grandcentrix.blutufintegration.data.model.DeviceUiState
 import net.grandcentrix.blutufintegration.data.model.Resource
@@ -56,18 +59,30 @@ class MainFragment : Fragment(), DevicesAdapter.OnClickActions {
         }
         binding.swipToRefresh.setOnRefreshListener {
             if (!isScanning) {
-                viewModel.startScan()
+//                viewModel.startScan()
+                scan()
             }
             binding.swipToRefresh.isRefreshing = false
         }
 
-        viewModel.uiModel.observe(viewLifecycleOwner, { uiModel -> updateUi(uiModel) })
+//        viewModel.uiModel.observe(viewLifecycleOwner, { uiModel -> updateUi(uiModel) })
 
         lifecycleScope.launchWhenStarted {
             viewModel.bleStateFlow.collect { enable -> updateBluetoothState(enable) }
         }
 
+        scan()
+
         return binding.root
+    }
+
+    @ExperimentalCoroutinesApi
+    private fun scan() {
+        lifecycleScope.launch {
+            viewModel.startScanTest().collect {
+                adapter.setItems(it)
+            }
+        }
     }
 
     private fun updateBluetoothState(enable: Boolean) {
@@ -126,7 +141,8 @@ class MainFragment : Fragment(), DevicesAdapter.OnClickActions {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.refresh) {
             if (!isScanning) {
-                viewModel.startScan()
+//                viewModel.startScan()
+                scan()
             }
         }
         return super.onOptionsItemSelected(item)
