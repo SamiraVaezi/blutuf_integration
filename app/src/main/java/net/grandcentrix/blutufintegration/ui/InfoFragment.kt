@@ -11,7 +11,7 @@ import net.grandcentrix.blutufintegration.data.model.DeviceUiState
 import net.grandcentrix.blutufintegration.databinding.FragmentInfoBinding
 import java.util.*
 
-class InfoFragment(val deviceUiState: DeviceUiState) : Fragment() {
+class InfoFragment(private val deviceUiState: DeviceUiState) : Fragment() {
 
     private lateinit var binding: FragmentInfoBinding
 

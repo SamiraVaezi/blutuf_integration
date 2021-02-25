@@ -1,21 +1,23 @@
 package net.grandcentrix.blutufintegration.data.model
 
-import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
-import kotlinx.android.parcel.RawValue
-import net.grandcentrix.blutuf.core.api.Bonding
+import android.content.Context
 import net.grandcentrix.blutuf.core.api.Device
-import net.grandcentrix.blutuf.core.api.Service
 import net.grandcentrix.blutufintegration.R
 
-@Parcelize
 data class DeviceUiState(
-    val device: @RawValue Device,
-    var state: @RawValue State,
-    var bonding: @RawValue Bonding.State?,
-    var services: @RawValue ArrayList<Service>
-) : Parcelable {
+    val device: Device,
+    var state: State
+) {
 
+    fun getStateTitle(context: Context) = when (state) {
+        State.CONNECTED -> context.getString(
+            R.string.connected_to, device.name ?: device.identifier
+        )
+        State.CONNECTING -> context.getString(
+            R.string.connecting_to, device.name ?: device.identifier
+        )
+        else -> context.getString(R.string.disconnected)
+    }
 }
 
 enum class State(val title: String, val backColor: Int, val textColor: Int) {

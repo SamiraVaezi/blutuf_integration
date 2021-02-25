@@ -26,7 +26,7 @@ import kotlin.concurrent.schedule
 
 private const val SCAN_TIMEOUT: Long = 30000
 
-class MainViewModel : ViewModel() {
+class SharedViewModel : ViewModel() {
 
     val uiModel = MutableLiveData<Resource<List<DeviceUiState>>>()
     private val devices = mutableListOf<DeviceUiState>()
@@ -71,12 +71,12 @@ class MainViewModel : ViewModel() {
                     if (!devices.any {
                             it.device.advertisementData.deviceName == device.advertisementData.deviceName
                         }) {
-                        devices.add(DeviceUiState(device, State.DISCONNECTED, null, arrayListOf()))
+//                        devices.add(DeviceUiState(device, State.DISCONNECTED, null, arrayListOf()))
                         uiModel.postValue(Resource.Success(devices))
                     }
                 },
                 onScanError = {
-                    uiModel.postValue(Resource.Error(it))
+//                    uiModel.postValue(Resource.Error(it))
                 },
                 onDeviceDisappeared = { device ->
                     devices.removeAll { it.device.identifier == device.identifier }
@@ -98,7 +98,7 @@ class MainViewModel : ViewModel() {
                 if (!devices.any {
                         it.device.advertisementData.deviceName == device.advertisementData.deviceName
                     }) {
-                    devices.add(DeviceUiState(device, State.DISCONNECTED, null, arrayListOf()))
+//                    devices.add(DeviceUiState(device, State.DISCONNECTED, null, arrayListOf()))
                     if (!isClosedForSend) {
                         offer(devices)
                     }
@@ -143,7 +143,7 @@ class MainViewModel : ViewModel() {
                         is ConnectionState.Ready -> {
                             connectionState.device.services()?.forEach { service ->
 
-                                deviceUiState?.services?.add(service)
+//                                deviceUiState?.services?.add(service)
                                 uiModel.postValue(Resource.Success(devices))
                                 Log.e("sami", "service -> " + service.identifier)
 
@@ -202,13 +202,13 @@ class MainViewModel : ViewModel() {
         devices.find {
             it.device.identifier == identifier
         }?.let {
-            it.bonding = Bonding.State.BONDING
+//            it.bonding = Bonding.State.BONDING
             uiModel.postValue(Resource.Success(devices))
         }
         val selectedDevice = Blutuf.bleManager.getDevice(identifier)
         selectedDevice.createBond {
             devices.find { deviceUiState -> deviceUiState.device.identifier == identifier }?.let {
-                it.bonding = selectedDevice.bondState
+//                it.bonding = selectedDevice.bondState
                 uiModel.postValue(Resource.Success(devices))
             }
         }

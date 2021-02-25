@@ -1,4 +1,4 @@
-package net.grandcentrix.blutufintegration.ui
+package net.grandcentrix.blutufintegration.ui.list
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -16,7 +16,7 @@ class DevicesAdapter(
     interface OnClickActions {
         fun onConnectClicked(device: DeviceUiState)
         fun onDisconnectClicked(device: DeviceUiState)
-        fun onItemClicked(device: DeviceUiState)
+        fun onItemClicked(identifier: String)
     }
 
     fun setItems(devices: List<DeviceUiState>) {
@@ -44,10 +44,17 @@ class DevicesAdapter(
                 device
             )
         }
-        holder.itemView.setOnClickListener { clickListener.onItemClicked(device) }
+        holder.itemView.setOnClickListener { clickListener.onItemClicked(device.device.identifier) }
     }
 
     override fun getItemCount() = items.size
+
+    fun updateItem(device: DeviceUiState) {
+        items.find { it.device.identifier == device.device.identifier }.let {
+            it?.state = device.state
+        }
+        notifyDataSetChanged()
+    }
 
     inner class ViewHolder(val binding: ListRowDeviceBinding) :
         RecyclerView.ViewHolder(binding.root) {

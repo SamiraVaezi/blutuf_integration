@@ -1,6 +1,7 @@
 package net.grandcentrix.blutufintegration.data.model
 
-import net.grandcentrix.blutuf.core.api.BlutufError
+import net.grandcentrix.blutuf.core.api.BlutufEvent
+
 
 sealed class Resource<out T : Any?> {
 
@@ -8,7 +9,7 @@ sealed class Resource<out T : Any?> {
     data class Scanning<out T : Any?>(val data: T? = null) : Resource<T>()
     data class Complete<out T : Any?>(val data: T? = null) : Resource<T>()
     data class Error(
-        val error: BlutufError
+        val error: BlutufEvent
     ) :
         Resource<Nothing>()
 }

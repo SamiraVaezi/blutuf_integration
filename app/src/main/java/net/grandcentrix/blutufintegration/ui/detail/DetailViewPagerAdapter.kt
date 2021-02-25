@@ -1,9 +1,9 @@
-package net.grandcentrix.blutufintegration.ui
+package net.grandcentrix.blutufintegration.ui.detail
 
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
-class DeviceDetailViewPagerAdapter (fragment: Fragment, private val pages: List<Fragment>) : FragmentStateAdapter(fragment) {
+class DetailViewPagerAdapter (fragment: Fragment, private val pages: List<Fragment>) : FragmentStateAdapter(fragment) {
 
     override fun getItemCount(): Int = pages.size
 

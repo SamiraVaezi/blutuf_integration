@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/fragment_main"
-        android:name="net.grandcentrix.blutufintegration.ui.MainFragment"
+        android:name="net.grandcentrix.blutufintegration.ui.list.ListFragment"
         android:label="@string/app_name">
 
         <action
@@ -30,12 +30,13 @@
 
     <fragment
         android:id="@+id/fragment_detail"
-        android:name="net.grandcentrix.blutufintegration.ui.DetailFragment"
+        android:name="net.grandcentrix.blutufintegration.ui.detail.DetailFragment"
         android:label="@string/fragment_label_detail">
 
         <argument
-            android:name="device"
-            app:argType="net.grandcentrix.blutufintegration.data.model.DeviceUiState" />
+            android:name="device_identifier"
+            app:argType="string" />
+
     </fragment>
 
 </navigation>
