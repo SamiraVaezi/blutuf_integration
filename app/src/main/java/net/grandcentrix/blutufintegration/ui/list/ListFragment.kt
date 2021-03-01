@@ -57,15 +57,13 @@ class ListFragment : Fragment(), DevicesAdapter.OnClickActions {
             binding.swipToRefresh.isRefreshing = false
         }
 
-
-        viewModel.uiModel.observe(viewLifecycleOwner, { uiModel -> updateUi(uiModel) })
-        viewModel.selectedDevice.observe(viewLifecycleOwner, { device -> updateDevice(device) })
+        viewModel.uiModel.observe(viewLifecycleOwner) { uiModel -> updateUi(uiModel) }
+        viewModel.selectedDevice.observe(viewLifecycleOwner) { device -> updateDevice(device) }
+        viewModel.scanState.observe(viewLifecycleOwner) { isScanning -> updateScanState(isScanning) }
     }
 
     private fun updateDevice(device: DeviceUiState?) {
         device?.let {
-            Log.e("samii"," list update state "+device.state)
-
             adapter.updateItem(device)
             binding.statusContainer.state.text = device.getStateTitle(requireContext())
         }
@@ -85,6 +83,10 @@ class ListFragment : Fragment(), DevicesAdapter.OnClickActions {
         }
     }
 
+    private fun updateScanState(isScanning: Boolean) {
+        binding.progressBar.isVisible = isScanning
+    }
+
     private fun updateUi(uiModel: ProcessState<List<DeviceUiState>>) {
         when (uiModel) {
             is ProcessState.Scanning -> {
@@ -97,7 +99,6 @@ class ListFragment : Fragment(), DevicesAdapter.OnClickActions {
                 adapter.setItems(uiModel.data)
             }
             is ProcessState.Error -> {
-
             }
         }
     }

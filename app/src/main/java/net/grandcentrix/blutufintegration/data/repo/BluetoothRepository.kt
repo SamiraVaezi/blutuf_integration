@@ -4,7 +4,6 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.util.Log
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -15,8 +14,6 @@ import net.grandcentrix.blutufintegration.data.model.DeviceUiState
 import net.grandcentrix.blutufintegration.data.model.ProcessState
 import net.grandcentrix.blutufintegration.data.model.State
 
-private const val SCAN_TIMEOUT: Long = 5000
-
 object BluetoothRepository {
 
     var isScanning = false
@@ -25,12 +22,10 @@ object BluetoothRepository {
     val selectedDeviceStateFlow = MutableStateFlow<DeviceUiState?>(null)
     val devicesStateFlow = MutableSharedFlow<ProcessState<List<DeviceUiState>>>()
 
-    @ExperimentalCoroutinesApi
     suspend fun scan() {
-        devices.clear()
         if (!isScanning) {
             isScanning = true
-
+            devices.clear()
             coroutineScope {
                 Blutuf.bleManager.startScan(
                     onDeviceAppeared = { device ->
