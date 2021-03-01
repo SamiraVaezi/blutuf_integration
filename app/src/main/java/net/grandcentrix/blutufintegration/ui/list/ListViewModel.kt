@@ -8,18 +8,14 @@ import net.grandcentrix.blutuf.core.Blutuf
 import net.grandcentrix.blutuf.core.api.BlutufEvent
 import net.grandcentrix.blutuf.core.api.BlutufEventResult
 import net.grandcentrix.blutufintegration.data.model.DeviceUiState
-import net.grandcentrix.blutufintegration.data.model.ProcessState
 import net.grandcentrix.blutufintegration.data.repo.BluetoothRepository
 
 private const val SCAN_TIMEOUT: Long = 5000
 
 class ListViewModel : ViewModel() {
 
-    private val _uiModel = BluetoothRepository.devicesStateFlow.asLiveData()
-    val uiModel: LiveData<ProcessState<List<DeviceUiState>>> = _uiModel
-
-    private val _selectedDevice = BluetoothRepository.selectedDeviceStateFlow.asLiveData()
-    val selectedDevice: LiveData<DeviceUiState?> = _selectedDevice
+    val uiModel = BluetoothRepository.devicesStateFlow.asLiveData()
+    val selectedDevice = BluetoothRepository.selectedDeviceStateFlow.asLiveData()
 
     var bleStateFlow = MutableStateFlow(false)
 
