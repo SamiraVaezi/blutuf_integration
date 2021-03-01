@@ -8,13 +8,11 @@ import net.grandcentrix.blutuf.core.Blutuf
 import net.grandcentrix.blutuf.core.api.BlutufEvent
 import net.grandcentrix.blutuf.core.api.BlutufEventResult
 import net.grandcentrix.blutufintegration.data.model.DeviceUiState
-import net.grandcentrix.blutufintegration.data.model.Resource
 import net.grandcentrix.blutufintegration.data.repo.BluetoothRepository
-
 
 class ListViewModel : ViewModel() {
 
-    val uiModel = MutableLiveData<Resource<List<DeviceUiState>>>()
+    val uiModel = BluetoothRepository.devicesStateFlow.asLiveData()
 
     val selectedDevice: LiveData<DeviceUiState?> = BluetoothRepository.selectedDeviceStateFlow.asLiveData()
 
@@ -45,18 +43,8 @@ class ListViewModel : ViewModel() {
 
     @ExperimentalCoroutinesApi
     fun startScan() {
-        uiModel.postValue(Resource.Scanning())
         viewModelScope.launch {
-            BluetoothRepository
-                .startScan()
-                .onCompletion {
-                    uiModel.postValue(Resource.Complete())
-                }
-                .catch {
-                }
-                .collect { list ->
-                    uiModel.postValue(Resource.Success(list))
-                }
+            BluetoothRepository.scan()
         }
     }
 

@@ -19,8 +19,14 @@ allprojects {
     repositories {
         google()
         jcenter()
+
         maven {
-            url "https://artifactory.gcxi.de/maven-internal"
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/grandcentrix/ble-lib-android")
+            credentials {
+                username = "SamiraVaezi"
+                password = "710260b02789ea5b8e884c4eb25783bc0ebe9701"
+            }
         }
     }
 }

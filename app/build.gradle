@@ -49,6 +49,7 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:2.3.3"
     implementation "androidx.navigation:navigation-ui-ktx:2.3.3"
 
+    implementation("net.grandcentrix.blutuf:async-api:0.6.0")
     implementation("net.grandcentrix.blutuf:core:0.6.0")
 
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.2.0'

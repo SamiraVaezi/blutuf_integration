@@ -11,10 +11,17 @@ class DetailViewModel(identifier: String) : ViewModel() {
 
     val uiModel = MutableLiveData<DeviceUiState>()
 
-    val selectedDevice: LiveData<DeviceUiState?> = BluetoothRepository.selectedDeviceStateFlow.asLiveData()
+    val selectedDevice = BluetoothRepository.selectedDeviceStateFlow.asLiveData()
 
     init {
         uiModel.value = BluetoothRepository.getDevice(identifier)
     }
 
+    fun onConnectClicked(deviceUiState: DeviceUiState) {
+        BluetoothRepository.connectDevice(deviceUiState)
+    }
+
+    fun onDisconnectClicked(deviceUiState: DeviceUiState) {
+        BluetoothRepository.disconnectDevice(deviceUiState)
+    }
 }

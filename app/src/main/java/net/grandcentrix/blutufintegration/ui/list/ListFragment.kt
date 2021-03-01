@@ -7,14 +7,12 @@ import androidx.fragment.app.Fragment
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import net.grandcentrix.blutufintegration.R
 import net.grandcentrix.blutufintegration.data.model.DeviceUiState
-import net.grandcentrix.blutufintegration.data.model.Resource
-import net.grandcentrix.blutufintegration.data.model.State
+import net.grandcentrix.blutufintegration.data.model.ProcessState
 import net.grandcentrix.blutufintegration.databinding.FragmentMainBinding
 import net.grandcentrix.blutufintegration.view.FullScreenErrorView
 
@@ -38,6 +36,12 @@ class ListFragment : Fragment(), DevicesAdapter.OnClickActions {
 
         binding = FragmentMainBinding.inflate(layoutInflater, container, false)
 
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         adapter = DevicesAdapter(clickListener = this)
         binding.recycler.adapter = adapter
         binding.recycler.addItemDecoration(
@@ -53,14 +57,15 @@ class ListFragment : Fragment(), DevicesAdapter.OnClickActions {
             binding.swipToRefresh.isRefreshing = false
         }
 
+
         viewModel.uiModel.observe(viewLifecycleOwner, { uiModel -> updateUi(uiModel) })
         viewModel.selectedDevice.observe(viewLifecycleOwner, { device -> updateDevice(device) })
-
-        return binding.root
     }
 
     private fun updateDevice(device: DeviceUiState?) {
         device?.let {
+            Log.e("samii"," list update state "+device.state)
+
             adapter.updateItem(device)
             binding.statusContainer.state.text = device.getStateTitle(requireContext())
         }
@@ -80,18 +85,18 @@ class ListFragment : Fragment(), DevicesAdapter.OnClickActions {
         }
     }
 
-    private fun updateUi(uiModel: Resource<List<DeviceUiState>>?) {
+    private fun updateUi(uiModel: ProcessState<List<DeviceUiState>>) {
         when (uiModel) {
-            is Resource.Scanning -> {
+            is ProcessState.Scanning -> {
                 binding.progressBar.isVisible = true
             }
-            is Resource.Complete -> {
+            is ProcessState.Complete -> {
                 binding.progressBar.isVisible = false
             }
-            is Resource.Success -> {
+            is ProcessState.Success -> {
                 adapter.setItems(uiModel.data)
             }
-            is Resource.Error -> {
+            is ProcessState.Error -> {
 
             }
         }
@@ -120,20 +125,5 @@ class ListFragment : Fragment(), DevicesAdapter.OnClickActions {
     override fun onItemClicked(identifier: String) {
         val action = ListFragmentDirections.actionMainDetail(identifier)
         findNavController().navigate(action)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Log.e("sami","list onStop")
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Log.e("sami","list onStart")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.e("sami","list onDestroy")
     }
 }

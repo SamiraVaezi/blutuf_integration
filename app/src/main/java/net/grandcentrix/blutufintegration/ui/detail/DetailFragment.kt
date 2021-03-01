@@ -60,6 +60,7 @@ class DetailFragment : Fragment() {
             getString(R.string.device_identifier, device.device.identifier)
 
         setupViewPager(device)
+        updateState(device)
     }
 
     private fun updateService(deviceUiState: DeviceUiState) {
@@ -73,8 +74,8 @@ class DetailFragment : Fragment() {
         binding.identifier.text =
             getString(R.string.device_identifier, deviceUiState.device.identifier)
 
-//        binding.btnConnect.setOnClickListener { sharedViewModel.connectDevice(deviceUiState.device.identifier) }
-//        binding.btnDisconnect.setOnClickListener { sharedViewModel.disconnectDevice(deviceUiState.device.identifier) }
+        binding.btnConnect.setOnClickListener { viewModel.onConnectClicked(deviceUiState) }
+        binding.btnDisconnect.setOnClickListener { viewModel.onDisconnectClicked(deviceUiState) }
         binding.btnBond.setOnClickListener { createBond() }
         updateState(deviceUiState)
     }
@@ -88,7 +89,7 @@ class DetailFragment : Fragment() {
 
     private fun updateState(deviceUiState: DeviceUiState?) {
         deviceUiState?.let {
-            Log.e("sami"," detail update state")
+            Log.e("samii"," detail update state : "+deviceUiState.state)
             binding.btnConnect.isVisible = deviceUiState.state == State.DISCONNECTED
             binding.btnDisconnect.isVisible = deviceUiState.state == State.CONNECTED
             binding.progressBar.isVisible = deviceUiState.state == State.CONNECTING
@@ -101,22 +102,6 @@ class DetailFragment : Fragment() {
             binding.progressBarBoning.isVisible = !binding.btnBond.isVisible
         }
     }
-
-    override fun onStop() {
-        super.onStop()
-        Log.e("sami","detail onStop")
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Log.e("sami","detail onStart")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.e("sami","detail onDestroy")
-    }
-
 }
 
 class ViewModelFactory(private val argument: String) : ViewModelProvider.NewInstanceFactory() {

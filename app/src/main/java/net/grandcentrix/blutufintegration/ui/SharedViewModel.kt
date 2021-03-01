@@ -1,4 +1,4 @@
-package net.grandcentrix.blutufintegration
+package net.grandcentrix.blutufintegration.ui
 
 import android.os.Handler
 import android.os.Looper
@@ -16,9 +16,8 @@ import kotlinx.coroutines.launch
 import net.grandcentrix.blutuf.core.Blutuf
 import net.grandcentrix.blutuf.core.api.*
 import net.grandcentrix.blutufintegration.data.model.DeviceUiState
-import net.grandcentrix.blutufintegration.data.model.Resource
+import net.grandcentrix.blutufintegration.data.model.ProcessState
 import net.grandcentrix.blutufintegration.data.model.State
-import net.grandcentrix.blutufintegration.data.model.StateResource
 import net.grandcentrix.blutufintegration.data.repo.BluetoothRepository
 import java.util.*
 import kotlin.concurrent.schedule
@@ -28,15 +27,10 @@ private const val SCAN_TIMEOUT: Long = 30000
 
 class SharedViewModel : ViewModel() {
 
-    val uiModel = MutableLiveData<Resource<List<DeviceUiState>>>()
+    val uiModel = MutableLiveData<ProcessState<List<DeviceUiState>>>()
     private val devices = mutableListOf<DeviceUiState>()
 
     var bleStateFlow = MutableStateFlow(false)
-
-    val selectedDeviceState: MutableStateFlow<StateResource<Any>> =
-        MutableStateFlow(StateResource.Disconnected())
-
-    var selectedDevice: SelectedDevice = Blutuf.bleManager.getDevice("")
 
     init {
         Blutuf.bleManager.registerEventListener(this::onEvent)
@@ -63,7 +57,7 @@ class SharedViewModel : ViewModel() {
 
     fun startScan() {
 
-        uiModel.postValue(Resource.Scanning())
+        uiModel.postValue(ProcessState.Scanning())
         devices.clear()
         viewModelScope.launch {
             Blutuf.bleManager.startScan(
@@ -72,7 +66,7 @@ class SharedViewModel : ViewModel() {
                             it.device.advertisementData.deviceName == device.advertisementData.deviceName
                         }) {
 //                        devices.add(DeviceUiState(device, State.DISCONNECTED, null, arrayListOf()))
-                        uiModel.postValue(Resource.Success(devices))
+                        uiModel.postValue(ProcessState.Success(devices))
                     }
                 },
                 onScanError = {
@@ -86,7 +80,7 @@ class SharedViewModel : ViewModel() {
             )
         }
         Timer("ScanTimer", false).schedule(SCAN_TIMEOUT) {
-            uiModel.postValue(Resource.Complete())
+            uiModel.postValue(ProcessState.Complete())
             stopScan()
         }
     }
@@ -130,7 +124,7 @@ class SharedViewModel : ViewModel() {
             val deviceUiState = devices.find { it.device.identifier == identifier }
             deviceUiState?.let {
                 it.state = State.CONNECTING
-                uiModel.postValue(Resource.Success(devices))
+                uiModel.postValue(ProcessState.Success(devices))
             }
             selectedDevice.addConnectionCallback { connectionState ->
                 devices.find { it.device.identifier == identifier }?.let {
@@ -138,13 +132,13 @@ class SharedViewModel : ViewModel() {
                     when (connectionState) {
                         is ConnectionState.Connected -> {
                             it.state = State.CONNECTED
-                            uiModel.postValue(Resource.Success(devices))
+                            uiModel.postValue(ProcessState.Success(devices))
                         }
                         is ConnectionState.Ready -> {
                             connectionState.device.services()?.forEach { service ->
 
 //                                deviceUiState?.services?.add(service)
-                                uiModel.postValue(Resource.Success(devices))
+                                uiModel.postValue(ProcessState.Success(devices))
                                 Log.e("sami", "service -> " + service.identifier)
 
                                 /*service.characteristics.forEach {
@@ -154,7 +148,7 @@ class SharedViewModel : ViewModel() {
                         }
                         is ConnectionState.Disconnected -> {
                             it.state = State.DISCONNECTED
-                            uiModel.postValue(Resource.Success(devices))
+                            uiModel.postValue(ProcessState.Success(devices))
                         }
                         else -> {
                             return@let
@@ -168,20 +162,16 @@ class SharedViewModel : ViewModel() {
 
     fun connectDevicetest(identifier: String) {
         val selectedDevice = Blutuf.bleManager.getDevice(identifier)
-        selectedDeviceState.value = StateResource.Connecting()
 
         val connectionCallback: ConnectionCallback = { connectionState ->
             when (connectionState) {
                 is ConnectionState.Connected -> {
-                    selectedDeviceState.value = StateResource.Connected()
                 }
                 is ConnectionState.Ready -> {
                 }
                 is ConnectionState.Disconnected -> {
-                    selectedDeviceState.value = StateResource.Disconnected()
                 }
                 is ConnectionState.ConnectionError -> {
-                    selectedDeviceState.value = StateResource.Error(connectionState.error)
                 }
             }
         }
@@ -194,7 +184,7 @@ class SharedViewModel : ViewModel() {
         selectedDevice.disconnect()
         devices.find { it.device.identifier == identifier }?.let {
             it.state = State.DISCONNECTED
-            uiModel.postValue(Resource.Success(devices))
+            uiModel.postValue(ProcessState.Success(devices))
         }
     }
 
@@ -203,13 +193,13 @@ class SharedViewModel : ViewModel() {
             it.device.identifier == identifier
         }?.let {
 //            it.bonding = Bonding.State.BONDING
-            uiModel.postValue(Resource.Success(devices))
+            uiModel.postValue(ProcessState.Success(devices))
         }
         val selectedDevice = Blutuf.bleManager.getDevice(identifier)
         selectedDevice.createBond {
             devices.find { deviceUiState -> deviceUiState.device.identifier == identifier }?.let {
 //                it.bonding = selectedDevice.bondState
-                uiModel.postValue(Resource.Success(devices))
+                uiModel.postValue(ProcessState.Success(devices))
             }
         }
     }
