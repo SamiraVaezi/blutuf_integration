@@ -1,28 +1,30 @@
 package net.grandcentrix.blutufintegration.ui.list
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import net.grandcentrix.blutuf.core.Blutuf
 import net.grandcentrix.blutuf.core.api.BlutufEvent
 import net.grandcentrix.blutuf.core.api.BlutufEventResult
 import net.grandcentrix.blutufintegration.data.model.DeviceUiState
+import net.grandcentrix.blutufintegration.data.model.ProcessState
 import net.grandcentrix.blutufintegration.data.repo.BluetoothRepository
 
 private const val SCAN_TIMEOUT: Long = 5000
 
 class ListViewModel : ViewModel() {
 
-    val uiModel = BluetoothRepository.devicesStateFlow.asLiveData()
+    private val _uiModel = BluetoothRepository.devicesStateFlow.asLiveData()
+    val uiModel: LiveData<ProcessState<List<DeviceUiState>>> = _uiModel
 
-    val selectedDevice: LiveData<DeviceUiState?> =
-        BluetoothRepository.selectedDeviceStateFlow.asLiveData()
+    private val _selectedDevice = BluetoothRepository.selectedDeviceStateFlow.asLiveData()
+    val selectedDevice: LiveData<DeviceUiState?> = _selectedDevice
 
     var bleStateFlow = MutableStateFlow(false)
 
-    val scanState = MutableLiveData(false)
+    private val _scanState = MutableLiveData(false)
+    val scanState : LiveData<Boolean> = _scanState
 
     init {
         Blutuf.bleManager.registerEventListener(this::onEvent)
@@ -50,17 +52,16 @@ class ListViewModel : ViewModel() {
 
     fun startScan() {
         viewModelScope.launch {
-            scanState.value = true
+            _scanState.value = true
             BluetoothRepository.scan()
-            Handler(Looper.getMainLooper()).postDelayed({
-                stopScan()
-            }, SCAN_TIMEOUT)
+            delay(SCAN_TIMEOUT)
+            stopScan()
         }
     }
 
     private fun stopScan() {
         BluetoothRepository.stopScan()
-        scanState.value = false
+        _scanState.value = false
     }
 
     fun onConnectClicked(deviceUiState: DeviceUiState) {

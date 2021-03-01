@@ -57,11 +57,9 @@ class ListFragment : Fragment(), DevicesAdapter.OnClickActions {
             binding.swipToRefresh.isRefreshing = false
         }
 
-        viewModel.uiModel.observe(viewLifecycleOwner, { uiModel -> updateUi(uiModel) })
-        viewModel.selectedDevice.observe(viewLifecycleOwner, { device -> updateDevice(device) })
-        viewModel.scanState.observe(
-            viewLifecycleOwner,
-            { isScanning -> updateScanState(isScanning) })
+        viewModel.uiModel.observe(viewLifecycleOwner) { uiModel -> updateUi(uiModel) }
+        viewModel.selectedDevice.observe(viewLifecycleOwner) { device -> updateDevice(device) }
+        viewModel.scanState.observe(viewLifecycleOwner) { isScanning -> updateScanState(isScanning) }
     }
 
     private fun updateDevice(device: DeviceUiState?) {
