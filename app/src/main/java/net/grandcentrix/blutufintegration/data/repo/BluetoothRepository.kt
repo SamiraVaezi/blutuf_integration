@@ -16,15 +16,16 @@ import net.grandcentrix.blutufintegration.data.model.State
 
 object BluetoothRepository {
 
-    var isScanning = false
     private val devices = mutableMapOf<String, DeviceUiState>()
 
     val selectedDeviceStateFlow = MutableStateFlow<DeviceUiState?>(null)
     val devicesStateFlow = MutableSharedFlow<ProcessState<List<DeviceUiState>>>()
 
+    private var scanCounter = 0
+
     suspend fun scan() {
-        if (!isScanning) {
-            isScanning = true
+        scanCounter++
+        if (scanCounter == 1) {
             devices.clear()
             coroutineScope {
                 Blutuf.bleManager.startScan(
@@ -55,8 +56,10 @@ object BluetoothRepository {
     }
 
     fun stopScan() {
-        isScanning = false
-        Blutuf.bleManager.stopScan()
+        scanCounter--
+        if (scanCounter == 0) {
+            Blutuf.bleManager.stopScan()
+        }
     }
 
     private fun Device.toDeviceState() = DeviceUiState(this, State.DISCONNECTED)
