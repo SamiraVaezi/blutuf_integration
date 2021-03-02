@@ -7,9 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.tabs.TabLayoutMediator
 import net.grandcentrix.blutufintegration.R
@@ -18,12 +15,14 @@ import net.grandcentrix.blutufintegration.data.model.State
 import net.grandcentrix.blutufintegration.databinding.FragmentDetailBinding
 import net.grandcentrix.blutufintegration.ui.InfoFragment
 import net.grandcentrix.blutufintegration.ui.ServiceFragment
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class DetailFragment : Fragment() {
 
     private val args: DetailFragmentArgs by navArgs()
 
-    private val viewModel: DetailViewModel by viewModels { ViewModelFactory(args.deviceIdentifier) }
+    private val viewModel: DetailViewModel by viewModel { parametersOf(args.deviceIdentifier) }
 
     lateinit var binding: FragmentDetailBinding
 
@@ -89,7 +88,6 @@ class DetailFragment : Fragment() {
 
     private fun updateState(deviceUiState: DeviceUiState?) {
         deviceUiState?.let {
-            Log.e("samii"," detail update state : "+deviceUiState.state)
             binding.btnConnect.isVisible = deviceUiState.state == State.DISCONNECTED
             binding.btnDisconnect.isVisible = deviceUiState.state == State.CONNECTED
             binding.progressBar.isVisible = deviceUiState.state == State.CONNECTING
@@ -102,8 +100,4 @@ class DetailFragment : Fragment() {
             binding.progressBarBoning.isVisible = !binding.btnBond.isVisible
         }
     }
-}
-
-class ViewModelFactory(private val argument: String) : ViewModelProvider.NewInstanceFactory() {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T = DetailViewModel(argument) as T
 }

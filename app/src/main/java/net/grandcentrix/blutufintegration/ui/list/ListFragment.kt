@@ -1,12 +1,10 @@
 package net.grandcentrix.blutufintegration.ui.list
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
@@ -15,16 +13,15 @@ import net.grandcentrix.blutufintegration.data.model.DeviceUiState
 import net.grandcentrix.blutufintegration.data.model.ProcessState
 import net.grandcentrix.blutufintegration.databinding.FragmentMainBinding
 import net.grandcentrix.blutufintegration.view.FullScreenErrorView
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ListFragment : Fragment(), DevicesAdapter.OnClickActions {
 
-    private val viewModel: ListViewModel by viewModels()
+    private val viewModel: ListViewModel by viewModel()
 
     lateinit var binding: FragmentMainBinding
 
     lateinit var adapter: DevicesAdapter
-
-    val identifier: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,7 +32,6 @@ class ListFragment : Fragment(), DevicesAdapter.OnClickActions {
         setHasOptionsMenu(true)
 
         binding = FragmentMainBinding.inflate(layoutInflater, container, false)
-
         return binding.root
     }
 
