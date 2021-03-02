@@ -19,6 +19,7 @@ import com.google.android.material.snackbar.Snackbar
 import net.grandcentrix.blutufintegration.R
 import net.grandcentrix.blutufintegration.data.repo.BluetoothRepository
 import net.grandcentrix.blutufintegration.databinding.FragmentLaunchBinding
+import org.koin.android.ext.android.inject
 
 
 private const val REQUEST_CODE_PERMISSION_LOCATION = 1
@@ -28,6 +29,8 @@ class LaunchFragment : Fragment() {
 
     @VisibleForTesting
     lateinit var binding: FragmentLaunchBinding
+
+    private val repository : BluetoothRepository by inject()
 
     private val permissions =
         arrayOf(
@@ -69,7 +72,7 @@ class LaunchFragment : Fragment() {
 
     @VisibleForTesting
     fun isBluetoothSupported(): CheckResult {
-        val result = when (BluetoothRepository.deviceSupportsBluetooth(requireContext())) {
+        val result = when (repository.deviceSupportsBluetooth(requireContext())) {
             true -> CheckResult.PASSED
             else -> CheckResult.REQUIRED
         }
