@@ -1,9 +1,6 @@
 package net.grandcentrix.blutufintegration.data.repo
 
-import android.Manifest
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothManager
-import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
