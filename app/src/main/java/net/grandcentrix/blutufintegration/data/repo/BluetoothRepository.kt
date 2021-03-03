@@ -1,5 +1,6 @@
 package net.grandcentrix.blutufintegration.data.repo
 
+import android.Manifest
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
@@ -10,6 +11,7 @@ import kotlinx.coroutines.launch
 import net.grandcentrix.blutuf.core.Blutuf
 import net.grandcentrix.blutuf.core.api.ConnectionState
 import net.grandcentrix.blutuf.core.api.Device
+import net.grandcentrix.blutuf.core.api.MissingPrecondition
 import net.grandcentrix.blutufintegration.data.model.DeviceUiState
 import net.grandcentrix.blutufintegration.data.model.ProcessState
 import net.grandcentrix.blutufintegration.data.model.State
@@ -100,10 +102,8 @@ class BluetoothRepository {
         }
     }
 
-    fun deviceSupportsBluetooth(context: Context): Boolean {
-        val bluetoothManager =
-            context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager?
-        return bluetoothManager?.adapter != null
+    fun checkPreconditions(): List<MissingPrecondition> {
+        return Blutuf.bleManager.checkPreconditions()
     }
 
     fun enableBluetooth(enable: Boolean) {
