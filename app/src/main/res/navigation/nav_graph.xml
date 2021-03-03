@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/fragment_launch"
-        android:name="net.grandcentrix.blutufintegration.ui.LaunchFragment">
+        android:name="net.grandcentrix.blutufintegration.ui.launch.LaunchFragment">
 
         <action
             android:id="@+id/action_launch_to_main"
