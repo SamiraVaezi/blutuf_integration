@@ -12,12 +12,14 @@ import net.grandcentrix.blutufintegration.R
 import net.grandcentrix.blutufintegration.data.model.DeviceUiState
 import net.grandcentrix.blutufintegration.data.model.ProcessState
 import net.grandcentrix.blutufintegration.databinding.FragmentMainBinding
+import net.grandcentrix.blutufintegration.di.LIST_VIEW_MODEL
 import net.grandcentrix.blutufintegration.view.FullScreenErrorView
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.qualifier.named
 
 class ListFragment : Fragment(), DevicesAdapter.OnClickActions {
 
-    private val viewModel: ListViewModel by viewModel()
+    private val viewModel: ListViewModel by viewModel(named(LIST_VIEW_MODEL))
 
     lateinit var binding: FragmentMainBinding
 

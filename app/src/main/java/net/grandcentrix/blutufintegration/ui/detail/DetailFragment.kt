@@ -13,16 +13,20 @@ import net.grandcentrix.blutufintegration.R
 import net.grandcentrix.blutufintegration.data.model.DeviceUiState
 import net.grandcentrix.blutufintegration.data.model.State
 import net.grandcentrix.blutufintegration.databinding.FragmentDetailBinding
+import net.grandcentrix.blutufintegration.di.DETAIL_VIEW_MODEL
 import net.grandcentrix.blutufintegration.ui.InfoFragment
 import net.grandcentrix.blutufintegration.ui.ServiceFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import org.koin.core.qualifier.named
 
 class DetailFragment : Fragment() {
 
     private val args: DetailFragmentArgs by navArgs()
 
-    private val viewModel: DetailViewModel by viewModel { parametersOf(args.deviceIdentifier) }
+    private val viewModel: DetailViewModel by viewModel(named(DETAIL_VIEW_MODEL)) {
+        parametersOf(args.deviceIdentifier)
+    }
 
     lateinit var binding: FragmentDetailBinding
 
