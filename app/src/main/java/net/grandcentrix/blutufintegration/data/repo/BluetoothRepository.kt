@@ -6,10 +6,9 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import net.grandcentrix.blutuf.core.Blutuf
-import net.grandcentrix.blutuf.core.api.ConnectionState
-import net.grandcentrix.blutuf.core.api.Device
-import net.grandcentrix.blutuf.core.api.MissingPrecondition
+import net.grandcentrix.blutuf.core.api.*
 import net.grandcentrix.blutufintegration.data.model.DeviceUiState
+import net.grandcentrix.blutufintegration.data.model.ErrorCondition
 import net.grandcentrix.blutufintegration.data.model.ProcessState
 import net.grandcentrix.blutufintegration.data.model.State
 
@@ -99,8 +98,16 @@ class BluetoothRepository {
         }
     }
 
-    fun checkPreconditions(): List<MissingPrecondition> {
+    fun checkPreconditions(): List<ErrorCondition> {
         return Blutuf.bleManager.checkPreconditions()
+            .map {
+                when(it) {
+                    is FineLocationPermissionMissingError -> ErrorCondition.PermissionNotGuaranteedError
+                    is BluetoothDisabledError -> ErrorCondition.DisabledBluetoothError
+                    is GpsDisabledError -> ErrorCondition.GpsDisabledError
+                    else -> ErrorCondition.UnknownError
+                }
+            }
     }
 
     fun enableBluetooth(enable: Boolean) {
