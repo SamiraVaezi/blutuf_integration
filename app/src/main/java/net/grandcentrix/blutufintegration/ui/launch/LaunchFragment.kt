@@ -3,7 +3,6 @@ package net.grandcentrix.blutufintegration.ui.launch
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,10 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
-import net.grandcentrix.blutuf.core.api.BluetoothDisabledError
-import net.grandcentrix.blutuf.core.api.FineLocationPermissionMissingError
-import net.grandcentrix.blutuf.core.api.MissingPrecondition
 import net.grandcentrix.blutufintegration.R
+import net.grandcentrix.blutufintegration.data.model.ErrorCondition
 import net.grandcentrix.blutufintegration.databinding.FragmentLaunchBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -22,7 +19,7 @@ private const val REQUEST_CODE_PERMISSION_LOCATION = 1
 
 class LaunchFragment : Fragment() {
 
-    lateinit var binding: FragmentLaunchBinding
+    private lateinit var binding: FragmentLaunchBinding
 
     private val viewModel: LaunchViewModel by viewModel()
 
@@ -40,6 +37,10 @@ class LaunchFragment : Fragment() {
         (requireActivity() as AppCompatActivity).supportActionBar?.hide()
         binding = FragmentLaunchBinding.inflate(layoutInflater, container, false)
 
+        updateStartBtn(needPermission = false)
+        binding.checkboxPermission.isChecked = true
+        binding.checkboxBle.isChecked = true
+
         return binding.root
     }
 
@@ -49,20 +50,14 @@ class LaunchFragment : Fragment() {
         viewModel.conditions.observe(viewLifecycleOwner) { conditions -> updateUi(conditions) }
     }
 
-    private fun updateUi(conditions: List<MissingPrecondition>) {
-        Log.e("sami", "error: ${conditions.size}")
-
-        binding.checkboxPermission.isChecked = true
-        binding.checkboxBle.isChecked = true
-        updateStartBtn(false)
-
+    private fun updateUi(conditions: List<ErrorCondition>) {
         conditions.forEach {
             when (it) {
-                is FineLocationPermissionMissingError -> {
+                is ErrorCondition.PermissionNotGuaranteedError -> {
                     binding.checkboxPermission.isChecked = false
                     updateStartBtn(needPermission = true)
                 }
-                is BluetoothDisabledError -> {
+                is ErrorCondition.DisabledBluetoothError -> {
                     binding.checkboxBle.isChecked = false
                 }
                 else -> {
