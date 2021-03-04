@@ -4,7 +4,7 @@ import androidx.lifecycle.*
 import net.grandcentrix.blutuf.core.api.MissingPrecondition
 import net.grandcentrix.blutufintegration.data.repo.BluetoothRepository
 
-class LaunchViewModel(private val repository: BluetoothRepository) : ViewModel() {
+class LaunchViewModel(private val bluetoothRepository: BluetoothRepository) : ViewModel() {
 
     val conditions = MutableLiveData<List<MissingPrecondition>>()
 
@@ -13,7 +13,7 @@ class LaunchViewModel(private val repository: BluetoothRepository) : ViewModel()
     }
 
     private fun checkPreconditions() {
-        conditions.value = repository.checkPreconditions()
+        conditions.value = bluetoothRepository.checkPreconditions()
     }
 }
 

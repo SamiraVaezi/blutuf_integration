@@ -22,7 +22,9 @@ class DetailFragment : Fragment() {
 
     private val args: DetailFragmentArgs by navArgs()
 
-    private val viewModel: DetailViewModel by viewModel { parametersOf(args.deviceIdentifier) }
+    private val viewModel: DetailViewModel by viewModel() {
+        parametersOf(args.deviceIdentifier)
+    }
 
     lateinit var binding: FragmentDetailBinding
 

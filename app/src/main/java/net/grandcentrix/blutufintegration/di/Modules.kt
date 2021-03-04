@@ -9,11 +9,15 @@ import org.koin.dsl.module
 
 val applicationModule = module {
 
-    viewModel { LaunchViewModel(get()) }
+    viewModel { LaunchViewModel(bluetoothRepository = get()) }
 
-    viewModel { ListViewModel(get()) }
+    viewModel {
+        ListViewModel(bluetoothRepository = get())
+    }
 
-    viewModel { (id: String) -> DetailViewModel(id, get()) }
+    viewModel { (id: String) ->
+        DetailViewModel(id, bluetoothRepository = get())
+    }
 
     single {
         BluetoothRepository()
