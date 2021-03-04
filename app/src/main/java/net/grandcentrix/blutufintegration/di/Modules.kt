@@ -9,7 +9,7 @@ import org.koin.dsl.module
 val applicationModule = module {
 
     viewModel {
-        ListViewModel(get())
+        ListViewModel(bluetoothRepository = get())
     }
 
     viewModel { (id: String) ->
