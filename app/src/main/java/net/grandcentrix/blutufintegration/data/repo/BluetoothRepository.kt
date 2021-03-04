@@ -14,7 +14,7 @@ import net.grandcentrix.blutufintegration.data.model.DeviceUiState
 import net.grandcentrix.blutufintegration.data.model.ProcessState
 import net.grandcentrix.blutufintegration.data.model.State
 
-object BluetoothRepository {
+class BluetoothRepository {
 
     private val devices = mutableMapOf<String, DeviceUiState>()
 

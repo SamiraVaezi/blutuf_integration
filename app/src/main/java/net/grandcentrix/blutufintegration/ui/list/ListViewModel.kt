@@ -12,10 +12,10 @@ import net.grandcentrix.blutufintegration.data.repo.BluetoothRepository
 
 private const val SCAN_TIMEOUT: Long = 5000
 
-class ListViewModel : ViewModel() {
+class ListViewModel(private val bluetoothRepository: BluetoothRepository) : ViewModel() {
 
-    val uiModel = BluetoothRepository.devicesStateFlow.asLiveData()
-    val selectedDevice = BluetoothRepository.selectedDeviceStateFlow.asLiveData()
+    val uiModel = bluetoothRepository.devicesStateFlow.asLiveData()
+    val selectedDevice = bluetoothRepository.selectedDeviceStateFlow.asLiveData()
 
     var bleStateFlow = MutableStateFlow(false)
 
@@ -28,7 +28,7 @@ class ListViewModel : ViewModel() {
 
     override fun onCleared() {
         Blutuf.bleManager.unregisterEventListener(this::onEvent)
-        BluetoothRepository.stopScan()
+        bluetoothRepository.stopScan()
     }
 
     private fun onEvent(event: BlutufEvent, result: BlutufEventResult) {
@@ -49,22 +49,22 @@ class ListViewModel : ViewModel() {
     fun startScan() {
         viewModelScope.launch {
             _scanState.value = true
-            BluetoothRepository.scan()
+            bluetoothRepository.scan()
             delay(SCAN_TIMEOUT)
             stopScan()
         }
     }
 
     private fun stopScan() {
-        BluetoothRepository.stopScan()
+        bluetoothRepository.stopScan()
         _scanState.value = false
     }
 
     fun onConnectClicked(deviceUiState: DeviceUiState) {
-        BluetoothRepository.connectDevice(deviceUiState)
+        bluetoothRepository.connectDevice(deviceUiState)
     }
 
     fun onDisconnectClicked(deviceUiState: DeviceUiState) {
-        BluetoothRepository.disconnectDevice(deviceUiState)
+        bluetoothRepository.disconnectDevice(deviceUiState)
     }
 }
