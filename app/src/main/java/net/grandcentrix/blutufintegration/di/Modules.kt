@@ -16,7 +16,7 @@ val applicationModule = module {
         DetailViewModel(id, bluetoothRepository = get())
     }
 
-    single() {
+    single {
         BluetoothRepository()
     }
 }
