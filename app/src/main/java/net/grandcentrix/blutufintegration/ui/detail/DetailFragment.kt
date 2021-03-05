@@ -26,7 +26,7 @@ class DetailFragment : Fragment() {
         parametersOf(args.deviceIdentifier)
     }
 
-    lateinit var binding: FragmentDetailBinding
+    private lateinit var binding: FragmentDetailBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

@@ -19,9 +19,9 @@ class ListFragment : Fragment(), DevicesAdapter.OnClickActions {
 
     private val viewModel: ListViewModel by viewModel()
 
-    lateinit var binding: FragmentMainBinding
+    private lateinit var binding: FragmentMainBinding
 
-    lateinit var adapter: DevicesAdapter
+    private lateinit var adapter: DevicesAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
