@@ -12,7 +12,7 @@ import net.grandcentrix.blutufintegration.R
 import net.grandcentrix.blutufintegration.data.model.DeviceUiState
 import net.grandcentrix.blutufintegration.data.model.ProcessState
 import net.grandcentrix.blutufintegration.databinding.FragmentMainBinding
-import net.grandcentrix.blutufintegration.view.FullScreenErrorView
+import net.grandcentrix.blutufintegration.ui.view.FullScreenErrorView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ListFragment : Fragment(), DevicesAdapter.OnClickActions {
