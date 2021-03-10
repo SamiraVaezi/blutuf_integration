@@ -33,17 +33,17 @@ val applicationModule = module {
         )
     }
 
-    factory { ScanUseCase(bluetoothRepository = get()) }
+    single { ScanUseCase(bluetoothRepository = get()) }
 
-    factory { StopScanUseCase(bluetoothRepository = get()) }
+    single { StopScanUseCase(bluetoothRepository = get()) }
 
-    factory { ConnectUseCase(bluetoothRepository = get()) }
+    single { ConnectUseCase(bluetoothRepository = get()) }
 
-    factory { DisconnectUseCase(bluetoothRepository = get()) }
+    single { DisconnectUseCase(bluetoothRepository = get()) }
 
-    factory { GetDeviceUseCase(bluetoothRepository = get()) }
+    single { GetDeviceUseCase(bluetoothRepository = get()) }
 
-    factory { CheckPreConditionsUseCase(bluetoothRepository = get()) }
+    single { CheckPreConditionsUseCase(bluetoothRepository = get()) }
 
     single {
         BluetoothRepository()
