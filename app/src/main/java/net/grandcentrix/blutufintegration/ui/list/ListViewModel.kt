@@ -20,7 +20,7 @@ class ListViewModel(
     getDeviceUseCase: GetDeviceUseCase,
 ) : ViewModel() {
 
-    val uiModel = scanUseCase.devicesFlow.asLiveData()
+    val uiModel = MutableLiveData<ProcessState<List<DeviceUiState>>>()
     val selectedDevice = getDeviceUseCase.selectedDeviceFlow.asLiveData()
 
     var bleStateFlow = MutableStateFlow(false)
@@ -55,7 +55,9 @@ class ListViewModel(
     fun startScan() {
         viewModelScope.launch {
             _scanState.value = true
-            scanUseCase.execute()
+            Transformations.map(scanUseCase.execute().asLiveData()) { resource ->
+                uiModel.value = resource
+            }
             delay(SCAN_TIMEOUT)
             stopScan()
         }
