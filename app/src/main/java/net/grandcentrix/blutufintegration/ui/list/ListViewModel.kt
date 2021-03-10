@@ -8,6 +8,7 @@ import net.grandcentrix.blutuf.core.Blutuf
 import net.grandcentrix.blutuf.core.api.BlutufEvent
 import net.grandcentrix.blutuf.core.api.BlutufEventResult
 import net.grandcentrix.blutufintegration.data.model.DeviceUiState
+import net.grandcentrix.blutufintegration.data.model.ProcessState
 import net.grandcentrix.blutufintegration.domain.*
 
 private const val SCAN_TIMEOUT: Long = 5000
@@ -17,11 +18,15 @@ class ListViewModel(
     private val stopScanUseCase: StopScanUseCase,
     private val connectUseCase: ConnectUseCase,
     private val disconnectUseCase: DisconnectUseCase,
-    getDeviceUseCase: GetDeviceUseCase,
+    getSelectedDeviceUseCase: GetSelectedDeviceUseCase
 ) : ViewModel() {
 
     val uiModel = MutableLiveData<ProcessState<List<DeviceUiState>>>()
-    val selectedDevice = getDeviceUseCase.selectedDeviceFlow.asLiveData()
+    val selectedDevice = liveData {
+        getSelectedDeviceUseCase.execute().collect{
+            it?.let { selectedDevice -> emit(selectedDevice) }
+        }
+    }
 
     var bleStateFlow = MutableStateFlow(false)
 
@@ -55,8 +60,8 @@ class ListViewModel(
     fun startScan() {
         viewModelScope.launch {
             _scanState.value = true
-            Transformations.map(scanUseCase.execute().asLiveData()) { resource ->
-                uiModel.value = resource
+            scanUseCase.execute().collect{
+                uiModel.value = it
             }
             delay(SCAN_TIMEOUT)
             stopScan()
