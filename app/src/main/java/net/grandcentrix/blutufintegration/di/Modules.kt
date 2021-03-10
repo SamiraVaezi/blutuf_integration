@@ -20,7 +20,7 @@ val applicationModule = module {
             stopScanUseCase = get(),
             connectUseCase = get(),
             disconnectUseCase = get(),
-            getDeviceUseCase = get()
+            getSelectedDeviceUseCase = get()
         )
     }
 
@@ -28,6 +28,7 @@ val applicationModule = module {
         DetailViewModel(
             id,
             getDeviceUseCase = get(),
+            getSelectedDeviceUseCase = get(),
             connectUseCase = get(),
             disconnectUseCase = get()
         )
@@ -44,6 +45,8 @@ val applicationModule = module {
     single { GetDeviceUseCase(bluetoothRepository = get()) }
 
     single { CheckPreConditionsUseCase(bluetoothRepository = get()) }
+
+    single { GetSelectedDeviceUseCase(bluetoothRepository = get()) }
 
     single {
         BluetoothRepository()
