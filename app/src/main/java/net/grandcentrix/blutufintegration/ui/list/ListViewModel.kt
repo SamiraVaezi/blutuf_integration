@@ -22,11 +22,7 @@ class ListViewModel(
 ) : ViewModel() {
 
     val uiModel = MutableLiveData<ProcessState<List<DeviceUiState>>>()
-    val selectedDevice = liveData {
-        getSelectedDeviceUseCase.execute().collect{
-            it?.let { selectedDevice -> emit(selectedDevice) }
-        }
-    }
+    val selectedDevice = getSelectedDeviceUseCase.execute().asLiveData()
 
     var bleStateFlow = MutableStateFlow(false)
 
