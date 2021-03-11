@@ -8,19 +8,26 @@ import net.grandcentrix.blutuf.core.Blutuf
 import net.grandcentrix.blutuf.core.api.BlutufEvent
 import net.grandcentrix.blutuf.core.api.BlutufEventResult
 import net.grandcentrix.blutufintegration.data.model.DeviceUiState
-import net.grandcentrix.blutufintegration.data.repo.BluetoothRepository
+import net.grandcentrix.blutufintegration.data.model.ProcessState
+import net.grandcentrix.blutufintegration.domain.*
 
 private const val SCAN_TIMEOUT: Long = 5000
 
-class ListViewModel(private val bluetoothRepository: BluetoothRepository) : ViewModel() {
+class ListViewModel(
+    private val scanUseCase: ScanUseCase,
+    private val stopScanUseCase: StopScanUseCase,
+    private val connectUseCase: ConnectUseCase,
+    private val disconnectUseCase: DisconnectUseCase,
+    getSelectedDeviceUseCase: GetSelectedDeviceUseCase
+) : ViewModel() {
 
-    val uiModel = bluetoothRepository.devicesStateFlow.asLiveData()
-    val selectedDevice = bluetoothRepository.selectedDeviceStateFlow.asLiveData()
+    val uiModel = MutableLiveData<ProcessState<List<DeviceUiState>>>()
+    val selectedDevice = getSelectedDeviceUseCase.execute().asLiveData()
 
     var bleStateFlow = MutableStateFlow(false)
 
     private val _scanState = MutableLiveData(false)
-    val scanState : LiveData<Boolean> = _scanState
+    val scanState: LiveData<Boolean> = _scanState
 
     init {
         Blutuf.bleManager.registerEventListener(this::onEvent)
@@ -28,7 +35,7 @@ class ListViewModel(private val bluetoothRepository: BluetoothRepository) : View
 
     override fun onCleared() {
         Blutuf.bleManager.unregisterEventListener(this::onEvent)
-        bluetoothRepository.stopScan()
+        stopScanUseCase.execute()
     }
 
     private fun onEvent(event: BlutufEvent, result: BlutufEventResult) {
@@ -49,22 +56,24 @@ class ListViewModel(private val bluetoothRepository: BluetoothRepository) : View
     fun startScan() {
         viewModelScope.launch {
             _scanState.value = true
-            bluetoothRepository.scan()
+            scanUseCase.execute().collect{
+                uiModel.value = it
+            }
             delay(SCAN_TIMEOUT)
             stopScan()
         }
     }
 
     private fun stopScan() {
-        bluetoothRepository.stopScan()
+        stopScanUseCase.execute()
         _scanState.value = false
     }
 
     fun onConnectClicked(deviceUiState: DeviceUiState) {
-        bluetoothRepository.connectDevice(deviceUiState)
+        connectUseCase.execute(deviceUiState.device.identifier)
     }
 
     fun onDisconnectClicked(deviceUiState: DeviceUiState) {
-        bluetoothRepository.disconnectDevice(deviceUiState)
+        disconnectUseCase.execute(deviceUiState.device.identifier)
     }
 }

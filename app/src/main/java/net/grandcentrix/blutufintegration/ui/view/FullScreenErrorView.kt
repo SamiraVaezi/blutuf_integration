@@ -1,4 +1,4 @@
-package net.grandcentrix.blutufintegration.view
+package net.grandcentrix.blutufintegration.ui.view
 
 import android.content.Context
 import android.util.AttributeSet

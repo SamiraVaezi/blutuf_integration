@@ -1,6 +1,7 @@
 package net.grandcentrix.blutufintegration.di
 
 import net.grandcentrix.blutufintegration.data.repo.BluetoothRepository
+import net.grandcentrix.blutufintegration.domain.*
 import net.grandcentrix.blutufintegration.ui.detail.DetailViewModel
 import net.grandcentrix.blutufintegration.ui.launch.LaunchViewModel
 import net.grandcentrix.blutufintegration.ui.list.ListViewModel
@@ -9,15 +10,43 @@ import org.koin.dsl.module
 
 val applicationModule = module {
 
-    viewModel { LaunchViewModel(bluetoothRepository = get()) }
+    viewModel {
+        LaunchViewModel(checkPreConditionsUseCase = get())
+    }
 
     viewModel {
-        ListViewModel(bluetoothRepository = get())
+        ListViewModel(
+            scanUseCase = get(),
+            stopScanUseCase = get(),
+            connectUseCase = get(),
+            disconnectUseCase = get(),
+            getSelectedDeviceUseCase = get()
+        )
     }
 
     viewModel { (id: String) ->
-        DetailViewModel(id, bluetoothRepository = get())
+        DetailViewModel(
+            id,
+            getDeviceUseCase = get(),
+            getSelectedDeviceUseCase = get(),
+            connectUseCase = get(),
+            disconnectUseCase = get()
+        )
     }
+
+    single { ScanUseCase(bluetoothRepository = get()) }
+
+    single { StopScanUseCase(bluetoothRepository = get()) }
+
+    single { ConnectUseCase(bluetoothRepository = get()) }
+
+    single { DisconnectUseCase(bluetoothRepository = get()) }
+
+    single { GetDeviceUseCase(bluetoothRepository = get()) }
+
+    single { CheckPreConditionsUseCase(bluetoothRepository = get()) }
+
+    single { GetSelectedDeviceUseCase(bluetoothRepository = get()) }
 
     single {
         BluetoothRepository()

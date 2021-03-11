@@ -1,7 +1,6 @@
 package net.grandcentrix.blutufintegration.data.repo
 
 import android.bluetooth.BluetoothAdapter
-import android.util.Log
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -64,44 +63,43 @@ class BluetoothRepository {
 
     fun getDevice(identifier: String) = devices[identifier]
 
-    fun connectDevice(deviceUiState: DeviceUiState) {
-        deviceUiState.state = State.CONNECTING
-        selectedDeviceStateFlow.value = deviceUiState
-        val selectedDevice = Blutuf.bleManager.getDevice(deviceUiState.device.identifier)
-        selectedDevice.addConnectionCallback { connectionState ->
-            when (connectionState) {
-                is ConnectionState.Connected -> {
-                    deviceUiState.state = State.CONNECTED
-                    selectedDeviceStateFlow.value = deviceUiState
-                }
-                is ConnectionState.Ready -> {
-                    connectionState.device.services()?.forEach { service ->
+    fun connectDevice(identifier: String) {
+        devices[identifier]?.let {
+            selectedDeviceStateFlow.value = it
+            val selectedDevice = Blutuf.bleManager.getDevice(identifier)
+            selectedDevice.addConnectionCallback { connectionState ->
+                when (connectionState) {
+                    is ConnectionState.Connected -> {
+                        it.state = State.CONNECTED
+                        selectedDeviceStateFlow.value = it
+                    }
+                    is ConnectionState.Ready -> {
+                        connectionState.device.services()?.forEach { service ->
+                        }
+                    }
+                    is ConnectionState.Disconnected -> {
+                        it.state = State.DISCONNECTED
+                        selectedDeviceStateFlow.value = it
+                    }
+                    else -> {
                     }
                 }
-                is ConnectionState.Disconnected -> {
-                    deviceUiState.state = State.DISCONNECTED
-                    selectedDeviceStateFlow.value = deviceUiState
-                }
-                else -> {
-                }
             }
+            selectedDevice.connect()
         }
-        selectedDevice.connect()
     }
 
-    fun disconnectDevice(deviceUiState: DeviceUiState) {
-        try {
-            val selectedDevice = Blutuf.bleManager.getDevice(deviceUiState.device.identifier)
+    fun disconnectDevice(identifier: String) {
+        devices[identifier]?.let {
+            val selectedDevice = Blutuf.bleManager.getDevice(identifier)
             selectedDevice.disconnect()
-        } catch (e: Exception) {
-            Log.e("sami", e.message.toString())
         }
     }
 
     fun checkPreconditions(): List<ErrorCondition> {
         return Blutuf.bleManager.checkPreconditions()
             .map {
-                when(it) {
+                when (it) {
                     is FineLocationPermissionMissingError -> ErrorCondition.PermissionNotGuaranteedError
                     is BluetoothDisabledError -> ErrorCondition.DisabledBluetoothError
                     is GpsDisabledError -> ErrorCondition.GpsDisabledError
